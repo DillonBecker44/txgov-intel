@@ -3,10 +3,10 @@ import { AGENCIES, TECH_AREAS, CATEGORIES, SUMMARY_STATS } from '../data/agencie
 import AgencyModal from '../components/AgencyModal';
 import TechTag from '../components/TechTag';
 import SpendBar from '../components/SpendBar';
-import LiveSpend from '../components/LiveSpend';
 import Chatbot from '../components/Chatbot';
+import BudgetTracker from '../components/BudgetTracker';
 
-const NAV_TABS = ['Overview', 'Agency Table', 'SB1 & HB500', 'Live Spend', 'Contract AI'];
+const NAV_TABS = ['Overview', 'Agency Table', 'SB1 & HB500', 'Budget Tracker', 'Contract AI'];
 
 export default function Dashboard({ onLogout }) {
   const [tab, setTab] = useState('Agency Table');
@@ -510,8 +510,8 @@ export default function Dashboard({ onLogout }) {
         </div>
       )}
 
-      {/* Tab: Live Spend */}
-      {tab === 'Live Spend' && <LiveSpend />}
+      {/* Tab: Budget Tracker */}
+      {tab === 'Budget Tracker' && <BudgetTracker />}
 
       {/* Tab: Contract AI */}
       {tab === 'Contract AI' && <Chatbot />}
