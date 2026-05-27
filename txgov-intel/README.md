@@ -14,7 +14,7 @@ Password-protected React app tracking Texas state agency IT budgets, SB1/HB500 l
 ```bash
 cd txgov-intel
 git init
-git add .
+git add  .
 git commit -m "Initial commit"
 git branch -M main
 git remote add origin https://github.com/YOUR_USERNAME/txgov-intel.git
