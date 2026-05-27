@@ -59,60 +59,73 @@ function isTechStackQuestion(question) {
 }
 
 // Extract agency name from a tech stack question
-function extractAgency(question) {
-  const q = question;
-  const agencyMap = [
-    { abbr: 'DPS',   patterns: ['dps','department of public safety','public safety'] },
-    { abbr: 'HHSC',  patterns: ['hhsc','health and human services'] },
-    { abbr: 'TxDOT', patterns: ['txdot','department of transportation','txdot'] },
-    { abbr: 'TEA',   patterns: ['tea','education agency'] },
-    { abbr: 'DIR',   patterns: ['dir ','dept of information resources','department of information resources'] },
-    { abbr: 'TxDMV', patterns: ['txdmv','motor vehicles','dmv'] },
-    { abbr: 'TDCJ',  patterns: ['tdcj','criminal justice'] },
-    { abbr: 'TWC',   patterns: ['twc','workforce commission'] },
-    { abbr: 'TPWD',  patterns: ['tpwd','parks and wildlife'] },
-    { abbr: 'CPA',   patterns: ['cpa','comptroller'] },
-    { abbr: 'OCA',   patterns: ['oca','court administration'] },
-    { abbr: 'GLO',   patterns: ['glo','general land office'] },
-    { abbr: 'TCEQ',  patterns: ['tceq','environmental quality'] },
-    { abbr: 'SOS',   patterns: ['secretary of state'] },
-    { abbr: 'TDLR',  patterns: ['tdlr','licensing and regulation'] },
-    { abbr: 'TXCC',  patterns: ['txcc','cyber command'] },
-    { abbr: 'TRS',   patterns: ['trs','teacher retirement'] },
-  ];
-  const lower = q.toLowerCase();
-  for (const a of agencyMap) {
-    if (a.patterns.some(p => lower.includes(p))) return a.abbr;
+// Agency registry — abbr for display, customerName for dataset matching, patterns for detection
+const AGENCY_REGISTRY = [
+  { abbr: 'DPS',   customerName: 'Department of Public Safety',                    patterns: ['dps','department of public safety','public safety'] },
+  { abbr: 'HHSC',  customerName: 'Health and Human Services Commission',           patterns: ['hhsc','health and human services'] },
+  { abbr: 'TxDOT', customerName: 'Department of Transportation',                   patterns: ['txdot','department of transportation'] },
+  { abbr: 'TEA',   customerName: 'Education Agency',                               patterns: [' tea ','texas education agency','education agency'] },
+  { abbr: 'DIR',   customerName: 'Department of Information Resources',            patterns: ['dir ','department of information resources'] },
+  { abbr: 'TxDMV', customerName: 'Department of Motor Vehicles',                   patterns: ['txdmv','motor vehicles','dmv'] },
+  { abbr: 'TDCJ',  customerName: 'Department of Criminal Justice',                 patterns: ['tdcj','criminal justice'] },
+  { abbr: 'TWC',   customerName: 'Workforce Commission',                           patterns: ['twc','workforce commission'] },
+  { abbr: 'TPWD',  customerName: 'Parks and Wildlife',                             patterns: ['tpwd','parks and wildlife'] },
+  { abbr: 'CPA',   customerName: 'Comptroller of Public Accounts',                 patterns: ['cpa ','comptroller'] },
+  { abbr: 'OCA',   customerName: 'Office of Court Administration',                 patterns: ['oca ','court administration'] },
+  { abbr: 'GLO',   customerName: 'General Land Office',                            patterns: ['glo ','general land office'] },
+  { abbr: 'TCEQ',  customerName: 'Commission on Environmental Quality',            patterns: ['tceq','environmental quality'] },
+  { abbr: 'SOS',   customerName: 'Secretary of State',                             patterns: ['secretary of state',' sos '] },
+  { abbr: 'TDLR',  customerName: 'Department of Licensing and Regulation',         patterns: ['tdlr','licensing and regulation'] },
+  { abbr: 'TRS',   customerName: 'Teacher Retirement System',                      patterns: ['trs ','teacher retirement'] },
+  { abbr: 'TNRIS', customerName: 'Natural Resources Information System',           patterns: ['tnris','natural resources information'] },
+  { abbr: 'TDA',   customerName: 'Department of Agriculture',                      patterns: [' tda ','department of agriculture'] },
+  { abbr: 'OAG',   customerName: 'Attorney General',                               patterns: ['oag ','attorney general'] },
+  { abbr: 'TXDPS', customerName: 'Department of Public Safety',                    patterns: ['txdps'] },
+];
+
+function extractAgencyRecord(question) {
+  const lower = question.toLowerCase();
+  for (const a of AGENCY_REGISTRY) {
+    if (a.patterns.some(p => lower.includes(p))) return a;
   }
   return null;
 }
 
-// Build a broad agency profile query — pulls all purchases for agency across recent FYs
-async function buildTechProfileQueries(agency) {
-  // Query 1: All purchases FY2024-2026, grouped by vendor + brand for stack analysis
+// Keep old function name for compatibility
+function extractAgency(question) {
+  const rec = extractAgencyRecord(question);
+  return rec ? rec.abbr : null;
+}
+
+// Build a broad agency profile query using the FULL customer name for matching
+async function buildTechProfileQueries(agencyAbbr) {
+  // Find the full customer name for this agency
+  const agencyRec = AGENCY_REGISTRY.find(a => a.abbr === agencyAbbr);
+  // Use a broad search term — the partial name that will match the full dataset value
+  const searchTerm = agencyRec ? agencyRec.customerName.split(' ').slice(0,3).join(' ').toUpperCase() : agencyAbbr;
+
   const vendorQuery = {
     dataset: 'main',
     params: {
       '$select': 'vendor_name, brand_name, rfo_description, SUM(purchase_amount) as total_spend, COUNT(*) as order_count, MAX(fiscal_year) as latest_fy',
-      '$where': `upper(customer_name) like '%${agency}%' AND fiscal_year >= '2022'`,
+      '$where': `upper(customer_name) like '%${searchTerm}%' AND fiscal_year >= '2022'`,
       '$group': 'vendor_name, brand_name, rfo_description',
       '$order': 'total_spend DESC',
       '$limit': '200',
     },
-    explanation: `All ${agency} vendor/brand purchases FY2022-present, grouped for stack analysis`,
+    explanation: `All ${agencyAbbr} vendor/brand purchases FY2022-present (searching: "${searchTerm}")`,
   };
 
-  // Query 2: FY26 current purchases
   const fy26Query = {
     dataset: 'fy26',
     params: {
       '$select': 'vendor_name, brand_name, rfo_description, SUM(purchase_amount) as total_spend, COUNT(*) as order_count',
-      '$where': `upper(customer_name) like '%${agency}%'`,
+      '$where': `upper(customer_name) like '%${searchTerm}%'`,
       '$group': 'vendor_name, brand_name, rfo_description',
       '$order': 'total_spend DESC',
       '$limit': '100',
     },
-    explanation: `${agency} FY2026 current purchases`,
+    explanation: `${agencyAbbr} FY2026 current purchases`,
   };
 
   return [vendorQuery, fy26Query];
