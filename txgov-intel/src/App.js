@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import './App.css';
 
 const SESSION_KEY = 'txgov_auth';
-const PASSWORD = process.env.REACT_APP_PASSWORD || 'signature2026';
+const PASSWORD =  import.meta.env.VITE_PASSWORD || 'signature2026';
 
 export default function App() {
   const [authed, setAuthed] = useState(false);
