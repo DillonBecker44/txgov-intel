@@ -5,8 +5,18 @@ const DS_FY26 = 'a743-wj72';
 const DS_HIST = 'w64c-ndf7';
 const DS_STS  = '8hps-ztn4';
 
-const TEXAN_RFOS = ['telecomm', 'next generation tex-an', 'tex-an', 'telecom'];
-const isTexan = (rfo) => rfo && TEXAN_RFOS.some(t => rfo.toLowerCase().includes(t));
+// TEX-AN and CCTS are both mandatory telecom programs billed through DIR
+// rfo_description values confirmed from live dataset (a743-wj72):
+//   "Telecomm" = TEX-AN voice/data services (AT&T, Verizon, Lumen etc.)
+//   "CCTS" = Capitol Complex Telephone System (Austin-area agencies)
+//   "Telecommunications" = older/alternative label
+//   contract_number pattern DIR-TELE-* = all TEX-AN/telecom contracts
+const TEXAN_RFOS = ['telecomm', 'next generation tex-an', 'tex-an', 'telecommunications', 'ccts', 'capitol complex telephone'];
+const isTexan = (rfo) => {
+  if (!rfo) return false;
+  const lower = rfo.toLowerCase();
+  return TEXAN_RFOS.some(t => lower.includes(t));
+};
 
 const STS_PROGRAMS = {
   'DCS Texas Private Cloud':     { label:'DCS Private Cloud',  color:'#1E2761', desc:'Atos — private cloud, compute, storage' },
@@ -205,12 +215,25 @@ export default function BudgetTracker() {
     setLoading(true); setError(null);
     try {
       setLoadMsg('Fetching FY2026 DIR coop & TEX-AN…');
-      const r1 = await fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$group=customer_name,rfo_description&$limit=10000`);
-      if (r1.ok) setCoopFY26(await r1.json());
+      // Split coop and telecom into separate queries to avoid $limit issues.
+      // TEX-AN/CCTS telecom rows use rfo_description containing "Telecomm" or "CCTS".
+      // Fetching them separately guarantees we don't lose them to the 50k row limit.
+      const [r1coop, r1tel] = await Promise.all([
+        fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=upper(rfo_description)%20not%20like%20%27%25TELECOM%25%27%20AND%20upper(rfo_description)%20not%20like%20%27%25CCTS%25%27&$group=customer_name,rfo_description&$limit=50000`),
+        fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=upper(rfo_description)%20like%20%27%25TELECOM%25%27%20OR%20upper(rfo_description)%20like%20%27%25CCTS%25%27&$group=customer_name,rfo_description&$limit=10000`),
+      ]);
+      const fy26coop = r1coop.ok ? await r1coop.json() : [];
+      const fy26tel  = r1tel.ok  ? await r1tel.json()  : [];
+      setCoopFY26([...fy26coop, ...fy26tel]);
 
       setLoadMsg('Fetching FY2025 DIR coop & TEX-AN…');
-      const r2 = await fetch(`${API}/${DS_HIST}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=fiscal_year=%272025%27&$group=customer_name,rfo_description&$limit=10000`);
-      if (r2.ok) setCoopFY25(await r2.json());
+      const [r2coop, r2tel] = await Promise.all([
+        fetch(`${API}/${DS_HIST}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=fiscal_year=%272025%27%20AND%20upper(rfo_description)%20not%20like%20%27%25TELECOM%25%27%20AND%20upper(rfo_description)%20not%20like%20%27%25CCTS%25%27&$group=customer_name,rfo_description&$limit=50000`),
+        fetch(`${API}/${DS_HIST}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=fiscal_year=%272025%27%20AND%20(upper(rfo_description)%20like%20%27%25TELECOM%25%27%20OR%20upper(rfo_description)%20like%20%27%25CCTS%25%27)&$group=customer_name,rfo_description&$limit=10000`),
+      ]);
+      const fy25coop = r2coop.ok ? await r2coop.json() : [];
+      const fy25tel  = r2tel.ok  ? await r2tel.json()  : [];
+      setCoopFY25([...fy25coop, ...fy25tel]);
 
       setLoadMsg('Fetching STS invoices…');
       const r3 = await fetch(`${API}/${DS_STS}.json?$select=customer,business_line,start_time,SUM(total_charges)%20as%20total&$group=customer,business_line,start_time&$limit=50000`);
@@ -222,10 +245,79 @@ export default function BudgetTracker() {
   };
 
   // Build spend for one agency + FY
+
+// Exact customer_name values as stored in DIR datasets
+// Source: DIR customer eligibility dataset (4v6c-qfkr) + manual verification
+const CUSTOMER_NAME_MAP = {
+  '529': 'Texas Health and Human Services Commission',
+  '601': 'Texas Department of Transportation',
+  '405': 'Texas Department of Public Safety',
+  '608': 'Texas Department of Motor Vehicles',
+  '701': 'Texas Education Agency',
+  '304': 'Texas Comptroller of Public Accounts',
+  '302': 'Texas Office of the Attorney General',
+  '313': 'Texas Department of Information Resources',
+  '320': 'Texas Workforce Commission',
+  '696': 'Texas Department of Criminal Justice',
+  '401': 'Texas Military Department',
+  '802': 'Texas Parks and Wildlife Department',
+  '580': 'Texas Water Development Board',
+  '323': 'Teacher Retirement System of Texas',
+  '212': 'Texas Office of Court Administration',
+  '305': 'Texas General Land Office',
+  '582': 'Texas Commission on Environmental Quality',
+  '307': 'Texas Secretary of State',
+  '537': 'Texas Department of State Health Services',
+  '575': 'Texas Division of Emergency Management',
+  '451': 'Texas Department of Banking',
+  '455': 'Railroad Commission of Texas',
+  '371': 'Texas Cyber Command',
+  '530': 'Texas Department of Family and Protective Services',
+  '303': 'Texas Facilities Commission',
+  '327': 'Employees Retirement System of Texas',
+  '328': 'Veterans Land Board',
+  '332': 'Texas Department of Housing and Community Affairs',
+  '356': 'Texas Ethics Commission',
+  '360': 'State Office of Administrative Hearings',
+  '403': 'Texas Veterans Commission',
+  '407': 'Texas Commission on Law Enforcement',
+  '448': 'Office of Injured Employee Counsel',
+  '452': 'Texas Department of Licensing and Regulation',
+  '454': 'Texas Department of Insurance',
+  '458': 'Texas Alcoholic Beverage Commission',
+  '473': 'Public Utility Commission of Texas',
+  '477': 'Commission on State Emergency Communications',
+  '479': 'State Office of Risk Management',
+  '503': 'Texas Medical Board',
+  '507': 'Texas Board of Nursing',
+  '515': 'Texas State Board of Pharmacy',
+  '542': 'Cancer Prevention and Research Institute of Texas',
+  '551': 'Texas Department of Agriculture',
+  '554': 'Texas Animal Health Commission',
+  '644': 'Texas Juvenile Justice Department',
+  '308': 'Texas State Auditor's Office',
+  '301': 'Office of the Governor',
+  '306': 'Texas State Library and Archives Commission',
+  '781': 'Texas Higher Education Coordinating Board',
+};
+
   const buildSpend = (agency, fy) => {
     const rows = (fy===CURRENT_FY ? coopFY26 : coopFY25)
-      .filter(r => r.customer_name?.toUpperCase().includes(agency.name.toUpperCase().slice(0,12)) ||
-                   r.customer_name?.toUpperCase().includes(agency.abbr.toUpperCase()));
+      .filter(r => {
+        if (!r.customer_name) return false;
+        const cn = r.customer_name.toUpperCase();
+        // 1. Try exact match from lookup map
+        const exactName = CUSTOMER_NAME_MAP[agency.num];
+        if (exactName && cn === exactName.toUpperCase()) return true;
+        // 2. Try contains match on exact name
+        if (exactName && cn.includes(exactName.toUpperCase())) return true;
+        // 3. Fallback: match on agency name keywords (skip short abbrs like DPS which match too broadly)
+        if (agency.name.length > 6) {
+          const keywords = agency.name.toUpperCase().replace(/^(TEXAS|DEPARTMENT OF|OFFICE OF|COMMISSION ON)\s+/,'').slice(0,18);
+          if (keywords.length > 5 && cn.includes(keywords)) return true;
+        }
+        return false;
+      });
 
     let coop=0, texan=0;
     const coopByRfo={};
