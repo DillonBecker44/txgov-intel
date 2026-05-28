@@ -295,7 +295,7 @@ const CUSTOMER_NAME_MAP = {
   '551': 'Texas Department of Agriculture',
   '554': 'Texas Animal Health Commission',
   '644': 'Texas Juvenile Justice Department',
-  '308': 'Texas State Auditor's Office',
+  '308': "Texas State Auditor's Office",
   '301': 'Office of the Governor',
   '306': 'Texas State Library and Archives Commission',
   '781': 'Texas Higher Education Coordinating Board',
