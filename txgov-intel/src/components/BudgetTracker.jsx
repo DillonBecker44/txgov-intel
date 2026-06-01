@@ -16,6 +16,101 @@ const isTexan = (rfo) => {
   if (!rfo) return false;
   const lower = rfo.toLowerCase();
   return TEXAN_RFOS.some(t => lower.includes(t));
+};
+
+const BUDGETS = {
+  // ── ART II: HEALTH & HUMAN SERVICES ──────────────────────────────────────
+  '529': { fy26:550,  fy27:550,  confirmed:true,
+    note:'Capital rider ~$550M/yr (MMIS $237M biennium + TIERS $123M biennium + other). Operational IR strategy ~$38M/yr additional not reflected here. Federal co-funded IT adds ~$280M/yr more (not GR).' },
+  '530': { fy26:30,   fy27:30,   confirmed:false,
+    note:'CCWIS state share ~$30M/yr. Federal 50% match adds ~$30M/yr more.' },
+  '537': { fy26:20,   fy27:20,   confirmed:false,
+    note:'Info Resources strategy ~$9M/yr + capital rider ~$11M/yr.' },
+  '320': { fy26:62,   fy27:40,   confirmed:false,
+    note:'LBE Art VII Info Tech strategy $31.5M FY26 + capital rider $6M + federal UI CRM build $25M (one-time). FY27 lower as build completes.' },
+  '332': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Housing systems + digital grant management. Info Resources + capital rider.' },
+
+  // ── ART III: EDUCATION ────────────────────────────────────────────────────
+  '701': { fy26:47,   fy27:44,   confirmed:false,
+    note:'LBE Art III Strategy B.3.5 Info Systems ~$41.5M FY26 + capital rider ~$6M/yr. Federal Title program IT ~$15M/yr not included.' },
+  '781': { fy26:6,    fy27:6,    confirmed:false,
+    note:'Higher ed data systems + student success analytics.' },
+  '306': { fy26:4,    fy27:4,    confirmed:false,
+    note:'TexShare + digital preservation infrastructure.' },
+  '323': { fy26:7,    fy27:7,    confirmed:false,
+    note:'TRS pension admin modernization. Info Resources + capital rider.' },
+
+  // ── ART V: PUBLIC SAFETY & CRIMINAL JUSTICE ───────────────────────────────
+  '405': { fy26:102,  fy27:85,   confirmed:false,
+    note:'DPS LAR: base IT strategy 5.1.2 = $57.4M FY26 all-funds. CC Docket adopted IT exceptional: body cameras/in-car $11M biennium, interoperability $9.9M, aircraft avionics $16.2M, EI#3 partial ~$44M FY26. FY27 lower as one-time items complete. TRUE IT budget ~$102M FY26.' },
+  '696': { fy26:75,   fy27:47,   confirmed:false,
+    note:'Base operational IT ~$45M/yr. CC Docket adopted: IT Staffing $7M biennium, Computer Refresh $0.15M, Capital equipment $54.4M biennium ($27.2M FY26). FY27 normalizes.' },
+  '401': { fy26:45,   fy27:45,   confirmed:false,
+    note:'GR IT ~$8M/yr. Total all-funds ~$45M/yr including substantial federal ARNG co-funding.' },
+  '644': { fy26:8,    fy27:7,    confirmed:false,
+    note:'CC Docket adopted: IT Staff $0.8M/yr, Records Mgmt $0.5M, Computer Refresh $0.8M/yr. Base operational ~$6M/yr.' },
+  '458': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Online licensing + compliance workflow + data analytics.' },
+
+  // ── ART VI: NATURAL RESOURCES ─────────────────────────────────────────────
+  '551': { fy26:4,    fy27:4,    confirmed:true,
+    note:'CC Art VI confirmed: Cybersecurity $0.8M/yr + Computer Equipment $0.1M + Operational IR ~$2.5M/yr = ~$3.5-4M/yr.' },
+  '582': { fy26:25,   fy27:25,   confirmed:true,
+    note:'CC Art VI confirmed: DCS $12.2M/yr + Cybersecurity $5.1M/yr + Operational IR $8M/yr = ~$25M/yr.' },
+  '802': { fy26:9,    fy27:9,    confirmed:false,
+    note:'Online licensing + GIS modernization. Info Resources ~$6M/yr + capital rider ~$3M/yr.' },
+  '455': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Oil and gas data modernization + online permitting + GIS.' },
+  '580': { fy26:7.5,  fy27:7.5,  confirmed:false,
+    note:'Water data + grant management system for Texas Water Fund. Info Resources + capital rider.' },
+  '305': { fy26:8,    fy27:8,    confirmed:false,
+    note:'GIS + land records + CDBG-DR grant management systems.' },
+
+  // ── ART VII: BUSINESS & ECONOMIC DEVELOPMENT ──────────────────────────────
+  '608': { fy26:62.5, fy27:62.5, confirmed:true,
+    note:'Capital rider $62.5M/yr confirmed — entire capital budget dedicated to registration/title system replacement (30-year-old system, 20+ legacy apps).' },
+  '601': { fy26:83.7, fy27:83.7, confirmed:true,
+    note:'Capital rider $83.7M/yr confirmed. Operational IR strategy ~$42M/yr additional and district IT ~$55M/yr not captured here — total all-in IT ~$181M/yr.' },
+
+  // ── ART I: GENERAL GOVERNMENT ─────────────────────────────────────────────
+  '313': { fy26:28.6, fy27:28.4, confirmed:true,
+    note:'LBB HAC Summary confirmed: GR governance $57.1M biennium = $28.6M/yr. Does NOT include STS ($1,048.4M biennium cost recovery), TEX-AN/CCTS ($231.9M biennium revolving fund), or Texas.gov — those flow through as agency coop/STS spend.' },
+  '371': { fy26:60.5, fy27:75.0, confirmed:true,
+    note:'HB150 fiscal note confirmed: $60.5M FY26 (SOC facility $25M + personnel $8.5M + operations), $75M FY27 (full ramp to 130 FTE).' },
+  '302': { fy26:15,   fy27:15,   confirmed:false,
+    note:'LBE confirmed Agency IT Projects = $0 FY26-27 (was $21M FY25 — projects complete). IT now embedded in operational strategies. Estimated ~$15M/yr ongoing.' },
+  '304': { fy26:28,   fy27:28,   confirmed:false,
+    note:'CAPPS stewardship + revenue systems. Info Resources ~$20M/yr + capital rider ~$8M/yr.' },
+  '307': { fy26:6,    fy27:6,    confirmed:false,
+    note:'TEAM election system upgrade + business filings modernization.' },
+  '303': { fy26:4,    fy27:4,    confirmed:false,
+    note:'FAMIS facilities management + building automation systems.' },
+  '308': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Audit analytics + HB5195 compliance review tools.' },
+  '403': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Veterans case management + benefits portal.' },
+  '327': { fy26:6,    fy27:6,    confirmed:false,
+    note:'Benefits administration modernization + HealthSelect systems.' },
+
+  // ── ART IV: JUDICIARY ─────────────────────────────────────────────────────
+  '212': { fy26:10,   fy27:6,    confirmed:false,
+    note:'HB500 funded: Appellate CMS $11.9M + Specialty Courts $3.9M. FY26 high for build phase, FY27 normalizes to operations.' },
+
+  // ── ART VIII: REGULATORY ──────────────────────────────────────────────────
+  '454': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Regulatory data + online filing portal + market analytics.' },
+  '473': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Grid reliability data systems + ERCOT integration.' },
+  '452': { fy26:5,    fy27:5,    confirmed:false,
+    note:'800+ license type digital platform + mobile inspection tools.' },
+  '451': { fy26:0.4,  fy27:0.4,  confirmed:true,
+    note:'LBE Art VIII confirmed: Information Resources strategy ~$0.4M/yr. Small regulatory agency.' },
+  '360': { fy26:3,    fy27:3,    confirmed:false,
+    note:'e-Filing + remote hearing capabilities + case management.' },
+  '332': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Housing systems + digital grant management.' },
+
   // ── ART I: GENERAL GOVERNMENT (additional) ────────────────────────────────
   '301': { fy26:5,    fy27:5,    confirmed:false,
     note:'Office of the Governor. Info Resources strategy ~$3M/yr + capital rider ~$2M/yr. LBE Art I.' },
@@ -230,99 +325,8 @@ const ALL_AGENCIES = [
 // budget_confirmed=true: verified from enacted legislation or agency operating budget
 // budget_confirmed=false: estimated from LBE strategy lines + LAR + methodology above
 //
-const BUDGETS = {
-  // ── ART II: HEALTH & HUMAN SERVICES ──────────────────────────────────────
-  '529': { fy26:550,  fy27:550,  confirmed:true,
-    note:'Capital rider ~$550M/yr (MMIS $237M biennium + TIERS $123M biennium + other). Operational IR strategy ~$38M/yr additional not reflected here. Federal co-funded IT adds ~$280M/yr more (not GR).' },
-  '530': { fy26:30,   fy27:30,   confirmed:false,
-    note:'CCWIS state share ~$30M/yr. Federal 50% match adds ~$30M/yr more.' },
-  '537': { fy26:20,   fy27:20,   confirmed:false,
-    note:'Info Resources strategy ~$9M/yr + capital rider ~$11M/yr.' },
-  '320': { fy26:62,   fy27:40,   confirmed:false,
-    note:'LBE Art VII Info Tech strategy $31.5M FY26 + capital rider $6M + federal UI CRM build $25M (one-time). FY27 lower as build completes.' },
-  '332': { fy26:8,    fy27:8,    confirmed:false,
-    note:'Housing systems + digital grant management. Info Resources + capital rider.' },
-
-  // ── ART III: EDUCATION ────────────────────────────────────────────────────
-  '701': { fy26:47,   fy27:44,   confirmed:false,
-    note:'LBE Art III Strategy B.3.5 Info Systems ~$41.5M FY26 + capital rider ~$6M/yr. Federal Title program IT ~$15M/yr not included.' },
-  '781': { fy26:6,    fy27:6,    confirmed:false,
-    note:'Higher ed data systems + student success analytics.' },
-  '306': { fy26:4,    fy27:4,    confirmed:false,
-    note:'TexShare + digital preservation infrastructure.' },
-  '323': { fy26:7,    fy27:7,    confirmed:false,
-    note:'TRS pension admin modernization. Info Resources + capital rider.' },
-
-  // ── ART V: PUBLIC SAFETY & CRIMINAL JUSTICE ───────────────────────────────
-  '405': { fy26:102,  fy27:85,   confirmed:false,
-    note:'DPS LAR: base IT strategy 5.1.2 = $57.4M FY26 all-funds. CC Docket adopted IT exceptional: body cameras/in-car $11M biennium, interoperability $9.9M, aircraft avionics $16.2M, EI#3 partial ~$44M FY26. FY27 lower as one-time items complete. TRUE IT budget ~$102M FY26.' },
-  '696': { fy26:75,   fy27:47,   confirmed:false,
-    note:'Base operational IT ~$45M/yr. CC Docket adopted: IT Staffing $7M biennium, Computer Refresh $0.15M, Capital equipment $54.4M biennium ($27.2M FY26). FY27 normalizes.' },
-  '401': { fy26:45,   fy27:45,   confirmed:false,
-    note:'GR IT ~$8M/yr. Total all-funds ~$45M/yr including substantial federal ARNG co-funding.' },
-  '644': { fy26:8,    fy27:7,    confirmed:false,
-    note:'CC Docket adopted: IT Staff $0.8M/yr, Records Mgmt $0.5M, Computer Refresh $0.8M/yr. Base operational ~$6M/yr.' },
-  '458': { fy26:4,    fy27:4,    confirmed:false,
-    note:'Online licensing + compliance workflow + data analytics.' },
-
-  // ── ART VI: NATURAL RESOURCES ─────────────────────────────────────────────
-  '551': { fy26:4,    fy27:4,    confirmed:true,
-    note:'CC Art VI confirmed: Cybersecurity $0.8M/yr + Computer Equipment $0.1M + Operational IR ~$2.5M/yr = ~$3.5-4M/yr.' },
-  '582': { fy26:25,   fy27:25,   confirmed:true,
-    note:'CC Art VI confirmed: DCS $12.2M/yr + Cybersecurity $5.1M/yr + Operational IR $8M/yr = ~$25M/yr.' },
-  '802': { fy26:9,    fy27:9,    confirmed:false,
-    note:'Online licensing + GIS modernization. Info Resources ~$6M/yr + capital rider ~$3M/yr.' },
-  '455': { fy26:5,    fy27:5,    confirmed:false,
-    note:'Oil and gas data modernization + online permitting + GIS.' },
-  '580': { fy26:7.5,  fy27:7.5,  confirmed:false,
-    note:'Water data + grant management system for Texas Water Fund. Info Resources + capital rider.' },
-  '305': { fy26:8,    fy27:8,    confirmed:false,
-    note:'GIS + land records + CDBG-DR grant management systems.' },
-
-  // ── ART VII: BUSINESS & ECONOMIC DEVELOPMENT ──────────────────────────────
-  '608': { fy26:62.5, fy27:62.5, confirmed:true,
-    note:'Capital rider $62.5M/yr confirmed — entire capital budget dedicated to registration/title system replacement (30-year-old system, 20+ legacy apps).' },
-  '601': { fy26:83.7, fy27:83.7, confirmed:true,
-    note:'Capital rider $83.7M/yr confirmed. Operational IR strategy ~$42M/yr additional and district IT ~$55M/yr not captured here — total all-in IT ~$181M/yr.' },
-
-  // ── ART I: GENERAL GOVERNMENT ─────────────────────────────────────────────
-  '313': { fy26:28.6, fy27:28.4, confirmed:true,
-    note:'LBB HAC Summary confirmed: GR governance $57.1M biennium = $28.6M/yr. Does NOT include STS ($1,048.4M biennium cost recovery), TEX-AN/CCTS ($231.9M biennium revolving fund), or Texas.gov — those flow through as agency coop/STS spend.' },
-  '371': { fy26:60.5, fy27:75.0, confirmed:true,
-    note:'HB150 fiscal note confirmed: $60.5M FY26 (SOC facility $25M + personnel $8.5M + operations), $75M FY27 (full ramp to 130 FTE).' },
-  '302': { fy26:15,   fy27:15,   confirmed:false,
-    note:'LBE confirmed Agency IT Projects = $0 FY26-27 (was $21M FY25 — projects complete). IT now embedded in operational strategies. Estimated ~$15M/yr ongoing.' },
-  '304': { fy26:28,   fy27:28,   confirmed:false,
-    note:'CAPPS stewardship + revenue systems. Info Resources ~$20M/yr + capital rider ~$8M/yr.' },
-  '307': { fy26:6,    fy27:6,    confirmed:false,
-    note:'TEAM election system upgrade + business filings modernization.' },
-  '303': { fy26:4,    fy27:4,    confirmed:false,
-    note:'FAMIS facilities management + building automation systems.' },
-  '308': { fy26:4,    fy27:4,    confirmed:false,
-    note:'Audit analytics + HB5195 compliance review tools.' },
-  '403': { fy26:4,    fy27:4,    confirmed:false,
-    note:'Veterans case management + benefits portal.' },
-  '327': { fy26:6,    fy27:6,    confirmed:false,
-    note:'Benefits administration modernization + HealthSelect systems.' },
-
-  // ── ART IV: JUDICIARY ─────────────────────────────────────────────────────
-  '212': { fy26:10,   fy27:6,    confirmed:false,
-    note:'HB500 funded: Appellate CMS $11.9M + Specialty Courts $3.9M. FY26 high for build phase, FY27 normalizes to operations.' },
-
-  // ── ART VIII: REGULATORY ──────────────────────────────────────────────────
-  '454': { fy26:8,    fy27:8,    confirmed:false,
-    note:'Regulatory data + online filing portal + market analytics.' },
-  '473': { fy26:5,    fy27:5,    confirmed:false,
-    note:'Grid reliability data systems + ERCOT integration.' },
-  '452': { fy26:5,    fy27:5,    confirmed:false,
-    note:'800+ license type digital platform + mobile inspection tools.' },
-  '451': { fy26:0.4,  fy27:0.4,  confirmed:true,
-    note:'LBE Art VIII confirmed: Information Resources strategy ~$0.4M/yr. Small regulatory agency.' },
-  '360': { fy26:3,    fy27:3,    confirmed:false,
-    note:'e-Filing + remote hearing capabilities + case management.' },
-  '332': { fy26:8,    fy27:8,    confirmed:false,
-    note:'Housing systems + digital grant management.' },
 };
+
 
 const CURRENT_FY = '2026';
 const PREV_FY    = '2025';
