@@ -117,31 +117,113 @@ const ALL_AGENCIES = [
 // SB1 89th Legislature IT budgets — annual allocation (biennium ÷ 2 where not confirmed)
 // Only agencies with significant IT appropriations tracked here
 // agencies NOT in this map will still show live spend data but without a budget line
+// ─── IT Budget by Agency ─────────────────────────────────────────────────────
+// Deep research methodology — May 2026
+// Sources: DPS LAR FY26-27 (dps.texas.gov), SB1 Art.V/VI/VII Conference Committee
+//   Issue Dockets (lbb.texas.gov), LBE by Strategy Arts I-X (LBB Jan 2025),
+//   LBB HAC Summary Recommendations (DIR Agency 313), HB150 fiscal note (TXCC),
+//   Agency LARs (DPS, OAG, SOS, TEA), Art.VI CC Issue Docket (TCEQ/TDA confirmed)
+//
+// WHAT THIS NUMBER REPRESENTS:
+//   = Total annual IT spend from ALL appropriated sources (GR + GR-D + Federal + Other)
+//   = Capital budget rider + IT strategy line + IT exceptional items + federal co-funded IT
+//   = What agencies actually spend on IT, not just the GR capital rider
+//
+// budget_confirmed=true: verified from enacted legislation or agency operating budget
+// budget_confirmed=false: estimated from LBE strategy lines + LAR + methodology above
+//
 const BUDGETS = {
-  '529': { fy26:550,  fy27:550,  confirmed:true  }, // HHSC
-  '601': { fy26:83.7, fy27:83.7, confirmed:true  }, // TxDOT
-  '313': { fy26:23.4, fy27:22.9, confirmed:true  }, // DIR — Art. I Rider 2 confirmed
-  '371': { fy26:60.5, fy27:75.0, confirmed:true  }, // TXCC — HB150 fiscal note confirmed
-  '405': { fy26:45.9, fy27:45.9, confirmed:true  }, // DPS
-  '608': { fy26:62.5, fy27:62.5, confirmed:true  }, // TxDMV
-  '530': { fy26:30,   fy27:30,   confirmed:false }, // DFPS
-  '320': { fy26:25,   fy27:25,   confirmed:false }, // TWC
-  '701': { fy26:40,   fy27:40,   confirmed:false }, // TEA
-  '304': { fy26:27.5, fy27:27.5, confirmed:false }, // CPA
-  '696': { fy26:22.5, fy27:22.5, confirmed:false }, // TDCJ
-  '401': { fy26:45,   fy27:45,   confirmed:false }, // TMD
-  '802': { fy26:9,    fy27:9,    confirmed:false }, // TPWD
-  '580': { fy26:7.5,  fy27:7.5,  confirmed:false }, // TWDB
-  '323': { fy26:7.5,  fy27:7.5,  confirmed:false }, // TRS
-  '212': { fy26:10,   fy27:10,   confirmed:false }, // OCA
-  '302': { fy26:15,   fy27:15,   confirmed:false }, // OAG
-  '305': { fy26:10,   fy27:10,   confirmed:false }, // GLO
-  '582': { fy26:11,   fy27:11,   confirmed:false }, // TCEQ
-  '307': { fy26:6,    fy27:6,    confirmed:false }, // SOS
-  '537': { fy26:20,   fy27:20,   confirmed:false }, // DSHS
-  '575': { fy26:15,   fy27:15,   confirmed:false }, // TDEM
-  '451': { fy26:0.4,  fy27:0.4,  confirmed:true  }, // DOB
-  '455': { fy26:5,    fy27:5,    confirmed:false }, // RRC
+  // ── ART II: HEALTH & HUMAN SERVICES ──────────────────────────────────────
+  '529': { fy26:550,  fy27:550,  confirmed:true,
+    note:'Capital rider ~$550M/yr (MMIS $237M biennium + TIERS $123M biennium + other). Operational IR strategy ~$38M/yr additional not reflected here. Federal co-funded IT adds ~$280M/yr more (not GR).' },
+  '530': { fy26:30,   fy27:30,   confirmed:false,
+    note:'CCWIS state share ~$30M/yr. Federal 50% match adds ~$30M/yr more.' },
+  '537': { fy26:20,   fy27:20,   confirmed:false,
+    note:'Info Resources strategy ~$9M/yr + capital rider ~$11M/yr.' },
+  '320': { fy26:62,   fy27:40,   confirmed:false,
+    note:'LBE Art VII Info Tech strategy $31.5M FY26 + capital rider $6M + federal UI CRM build $25M (one-time). FY27 lower as build completes.' },
+  '332': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Housing systems + digital grant management. Info Resources + capital rider.' },
+
+  // ── ART III: EDUCATION ────────────────────────────────────────────────────
+  '701': { fy26:47,   fy27:44,   confirmed:false,
+    note:'LBE Art III Strategy B.3.5 Info Systems ~$41.5M FY26 + capital rider ~$6M/yr. Federal Title program IT ~$15M/yr not included.' },
+  '781': { fy26:6,    fy27:6,    confirmed:false,
+    note:'Higher ed data systems + student success analytics.' },
+  '306': { fy26:4,    fy27:4,    confirmed:false,
+    note:'TexShare + digital preservation infrastructure.' },
+  '323': { fy26:7,    fy27:7,    confirmed:false,
+    note:'TRS pension admin modernization. Info Resources + capital rider.' },
+
+  // ── ART V: PUBLIC SAFETY & CRIMINAL JUSTICE ───────────────────────────────
+  '405': { fy26:102,  fy27:85,   confirmed:false,
+    note:'DPS LAR: base IT strategy 5.1.2 = $57.4M FY26 all-funds. CC Docket adopted IT exceptional: body cameras/in-car $11M biennium, interoperability $9.9M, aircraft avionics $16.2M, EI#3 partial ~$44M FY26. FY27 lower as one-time items complete. TRUE IT budget ~$102M FY26.' },
+  '696': { fy26:75,   fy27:47,   confirmed:false,
+    note:'Base operational IT ~$45M/yr. CC Docket adopted: IT Staffing $7M biennium, Computer Refresh $0.15M, Capital equipment $54.4M biennium ($27.2M FY26). FY27 normalizes.' },
+  '401': { fy26:45,   fy27:45,   confirmed:false,
+    note:'GR IT ~$8M/yr. Total all-funds ~$45M/yr including substantial federal ARNG co-funding.' },
+  '644': { fy26:8,    fy27:7,    confirmed:false,
+    note:'CC Docket adopted: IT Staff $0.8M/yr, Records Mgmt $0.5M, Computer Refresh $0.8M/yr. Base operational ~$6M/yr.' },
+  '458': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Online licensing + compliance workflow + data analytics.' },
+
+  // ── ART VI: NATURAL RESOURCES ─────────────────────────────────────────────
+  '551': { fy26:4,    fy27:4,    confirmed:true,
+    note:'CC Art VI confirmed: Cybersecurity $0.8M/yr + Computer Equipment $0.1M + Operational IR ~$2.5M/yr = ~$3.5-4M/yr.' },
+  '582': { fy26:25,   fy27:25,   confirmed:true,
+    note:'CC Art VI confirmed: DCS $12.2M/yr + Cybersecurity $5.1M/yr + Operational IR $8M/yr = ~$25M/yr.' },
+  '802': { fy26:9,    fy27:9,    confirmed:false,
+    note:'Online licensing + GIS modernization. Info Resources ~$6M/yr + capital rider ~$3M/yr.' },
+  '455': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Oil and gas data modernization + online permitting + GIS.' },
+  '580': { fy26:7.5,  fy27:7.5,  confirmed:false,
+    note:'Water data + grant management system for Texas Water Fund. Info Resources + capital rider.' },
+  '305': { fy26:8,    fy27:8,    confirmed:false,
+    note:'GIS + land records + CDBG-DR grant management systems.' },
+
+  // ── ART VII: BUSINESS & ECONOMIC DEVELOPMENT ──────────────────────────────
+  '608': { fy26:62.5, fy27:62.5, confirmed:true,
+    note:'Capital rider $62.5M/yr confirmed — entire capital budget dedicated to registration/title system replacement (30-year-old system, 20+ legacy apps).' },
+  '601': { fy26:83.7, fy27:83.7, confirmed:true,
+    note:'Capital rider $83.7M/yr confirmed. Operational IR strategy ~$42M/yr additional and district IT ~$55M/yr not captured here — total all-in IT ~$181M/yr.' },
+
+  // ── ART I: GENERAL GOVERNMENT ─────────────────────────────────────────────
+  '313': { fy26:28.6, fy27:28.4, confirmed:true,
+    note:'LBB HAC Summary confirmed: GR governance $57.1M biennium = $28.6M/yr. Does NOT include STS ($1,048.4M biennium cost recovery), TEX-AN/CCTS ($231.9M biennium revolving fund), or Texas.gov — those flow through as agency coop/STS spend.' },
+  '371': { fy26:60.5, fy27:75.0, confirmed:true,
+    note:'HB150 fiscal note confirmed: $60.5M FY26 (SOC facility $25M + personnel $8.5M + operations), $75M FY27 (full ramp to 130 FTE).' },
+  '302': { fy26:15,   fy27:15,   confirmed:false,
+    note:'LBE confirmed Agency IT Projects = $0 FY26-27 (was $21M FY25 — projects complete). IT now embedded in operational strategies. Estimated ~$15M/yr ongoing.' },
+  '304': { fy26:28,   fy27:28,   confirmed:false,
+    note:'CAPPS stewardship + revenue systems. Info Resources ~$20M/yr + capital rider ~$8M/yr.' },
+  '307': { fy26:6,    fy27:6,    confirmed:false,
+    note:'TEAM election system upgrade + business filings modernization.' },
+  '303': { fy26:4,    fy27:4,    confirmed:false,
+    note:'FAMIS facilities management + building automation systems.' },
+  '308': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Audit analytics + HB5195 compliance review tools.' },
+  '403': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Veterans case management + benefits portal.' },
+  '327': { fy26:6,    fy27:6,    confirmed:false,
+    note:'Benefits administration modernization + HealthSelect systems.' },
+
+  // ── ART IV: JUDICIARY ─────────────────────────────────────────────────────
+  '212': { fy26:10,   fy27:6,    confirmed:false,
+    note:'HB500 funded: Appellate CMS $11.9M + Specialty Courts $3.9M. FY26 high for build phase, FY27 normalizes to operations.' },
+
+  // ── ART VIII: REGULATORY ──────────────────────────────────────────────────
+  '454': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Regulatory data + online filing portal + market analytics.' },
+  '473': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Grid reliability data systems + ERCOT integration.' },
+  '452': { fy26:5,    fy27:5,    confirmed:false,
+    note:'800+ license type digital platform + mobile inspection tools.' },
+  '451': { fy26:0.4,  fy27:0.4,  confirmed:true,
+    note:'LBE Art VIII confirmed: Information Resources strategy ~$0.4M/yr. Small regulatory agency.' },
+  '360': { fy26:3,    fy27:3,    confirmed:false,
+    note:'e-Filing + remote hearing capabilities + case management.' },
+  '332': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Housing systems + digital grant management.' },
 };
 
 const CURRENT_FY = '2026';
@@ -219,8 +301,8 @@ export default function BudgetTracker() {
       // TEX-AN/CCTS telecom rows use rfo_description containing "Telecomm" or "CCTS".
       // Fetching them separately guarantees we don't lose them to the 50k row limit.
       const [r1coop, r1tel] = await Promise.all([
-        fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=upper(rfo_description)%20not%20like%20%27%25TELECOM%25%27%20AND%20upper(rfo_description)%20not%20like%20%27%25CCTS%25%27&$group=customer_name,rfo_description&$limit=50000`),
-        fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=upper(rfo_description)%20like%20%27%25TELECOM%25%27%20OR%20upper(rfo_description)%20like%20%27%25CCTS%25%27&$group=customer_name,rfo_description&$limit=10000`),
+        fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=fiscal_year=%272026%27%20AND%20upper(rfo_description)%20not%20like%20%27%25TELECOM%25%27%20AND%20upper(rfo_description)%20not%20like%20%27%25CCTS%25%27&$group=customer_name,rfo_description&$limit=50000`),
+        fetch(`${API}/${DS_FY26}.json?$select=customer_name,rfo_description,SUM(purchase_amount)%20as%20total&$where=fiscal_year=%272026%27%20AND%20(upper(rfo_description)%20like%20%27%25TELECOM%25%27%20OR%20upper(rfo_description)%20like%20%27%25CCTS%25%27)&$group=customer_name,rfo_description&$limit=10000`),
       ]);
       const fy26coop = r1coop.ok ? await r1coop.json() : [];
       const fy26tel  = r1tel.ok  ? await r1tel.json()  : [];
@@ -246,59 +328,102 @@ export default function BudgetTracker() {
 
   // Build spend for one agency + FY
 
-// Exact customer_name values as stored in DIR datasets
-// Source: DIR customer eligibility dataset (4v6c-qfkr) + manual verification
+// Exact customer_name values from DIR Customer Eligibility dataset (4v6c-qfkr)
+// 92 state agencies — authoritative source, verified May 2026
 const CUSTOMER_NAME_MAP = {
-  '529': 'Texas Health and Human Services Commission',
-  '601': 'Texas Department of Transportation',
-  '405': 'Texas Department of Public Safety',
-  '608': 'Texas Department of Motor Vehicles',
-  '701': 'Texas Education Agency',
+  '101': 'The Texas Senate',
+  '102': 'House of Representatives',
+  '103': 'Texas Legislative Council',
+  '104': 'Legislative Budget Board',
+  '116': 'Sunset Advisory Commission',
+  '201': 'Supreme Court of Texas',
+  '202': 'State Bar of Texas',
+  '203': 'Texas Board of Law Examiners',
+  '211': 'Texas Court of Criminal Appeals',
+  '212': 'Office of Court Administration',
+  '213': 'Office of the State Prosecuting Attorney',
+  '215': 'Office of Capital Writs',
+  '242': 'State Commission on Judicial Conduct',
+  '243': 'Texas State Law Library',
+  '301': 'Office of the Governor',
+  '302': 'Office of the Attorney General of Texas',
+  '303': 'Texas Facilities Commission',
   '304': 'Texas Comptroller of Public Accounts',
-  '302': 'Texas Office of the Attorney General',
+  '305': 'Texas General Land Office',
+  '306': 'Texas State Library and Archives Commission',
+  '307': 'Texas Secretary of State',
+  '308': 'Texas State Auditor',
+  '312': 'Texas State Securities Board',
   '313': 'Texas Department of Information Resources',
   '320': 'Texas Workforce Commission',
-  '696': 'Texas Department of Criminal Justice',
-  '401': 'Texas Military Department',
-  '802': 'Texas Parks and Wildlife Department',
-  '580': 'Texas Water Development Board',
-  '323': 'Teacher Retirement System of Texas',
-  '212': 'Texas Office of Court Administration',
-  '305': 'Texas General Land Office',
-  '582': 'Texas Commission on Environmental Quality',
-  '307': 'Texas Secretary of State',
-  '537': 'Texas Department of State Health Services',
-  '575': 'Texas Division of Emergency Management',
-  '451': 'Texas Department of Banking',
-  '455': 'Railroad Commission of Texas',
-  '371': 'Texas Cyber Command',
-  '530': 'Texas Department of Family and Protective Services',
-  '303': 'Texas Facilities Commission',
-  '327': 'Employees Retirement System of Texas',
-  '328': 'Veterans Land Board',
+  '323': 'Employees Retirement System of Texas',
+  '326': 'Texas Emergency Services Retirement System',
+  '329': 'Texas Real Estate Commission',
   '332': 'Texas Department of Housing and Community Affairs',
+  '338': 'Texas Pension Review Board',
+  '347': 'Texas Public Finance Authority',
+  '352': 'Texas Bond Review Board',
   '356': 'Texas Ethics Commission',
-  '360': 'State Office of Administrative Hearings',
+  '359': 'Office of Public Insurance Counsel',
+  '360': 'State Office Of Administrative Hearings',
+  '362': 'Texas Lottery Commission',
+  '364': 'Health Professions Council',
+  '401': 'Texas Military Department',
   '403': 'Texas Veterans Commission',
+  '405': 'Texas Department of Public Safety',
   '407': 'Texas Commission on Law Enforcement',
-  '448': 'Office of Injured Employee Counsel',
+  '409': 'Texas Commission on Jail Standards',
+  '411': 'Texas Commission on Fire Protection',
+  '448': 'Office of Injured Employee Council',
+  '450': 'Texas Department of Savings and Mortgage Lending',
+  '451': 'Texas Department of Banking',
   '452': 'Texas Department of Licensing and Regulation',
   '454': 'Texas Department of Insurance',
+  '455': 'Railroad Commission of Texas',
+  '456': 'Texas State Board of Plumbing Examiners',
+  '457': 'Texas State Board of Public Accountancy',
   '458': 'Texas Alcoholic Beverage Commission',
+  '459': 'Texas Board of Architectural Examiners',
+  '460': 'Texas Board of Professional Engineers',
+  '466': 'Texas Office of Consumer Credit Commissioner',
+  '469': 'Texas Credit Union Department',
   '473': 'Public Utility Commission of Texas',
+  '475': 'Office of Public Utility Counsel',
+  '476': 'Texas Racing Commission',
   '477': 'Commission on State Emergency Communications',
-  '479': 'State Office of Risk Management',
+  '479': 'State office of Risk Management',
+  '481': 'Texas Board of Professional Geoscientists',
   '503': 'Texas Medical Board',
+  '504': 'Texas State Board of Dental Examiners',
   '507': 'Texas Board of Nursing',
+  '508': 'Texas Board of Chiropractic Examiners',
+  '510': 'Texas Behavioral Health Executive Council',
+  '513': 'Texas Funeral Service Commission',
+  '514': 'Texas Optometry Board',
   '515': 'Texas State Board of Pharmacy',
-  '542': 'Cancer Prevention and Research Institute of Texas',
+  '529': 'Texas Health and Human Services Commission',
+  '530': 'Texas Department of Family and Protective Services',
+  '533': 'Executive Council of Physical and Occupational Therapy Examiners',
+  '537': 'Texas Department of State Health Services',
+  '542': 'Cancer Prevention & Research Institute of Texas',
+  '544': 'Texas Civil Commitment Office',
   '551': 'Texas Department of Agriculture',
   '554': 'Texas Animal Health Commission',
+  '575': 'Texas Division of Emergency Management',
+  '580': 'Texas Water Development Board',
+  '582': 'Texas Commission on Environmental Quality',
+  '592': 'Texas State Soil and Water Conservation Board',
+  '601': 'Texas Department of Transportation',
+  '608': 'Texas Department of Motor Vehicles',
   '644': 'Texas Juvenile Justice Department',
-  '308': "Texas State Auditor's Office",
-  '301': 'Office of the Governor',
-  '306': 'Texas State Library and Archives Commission',
+  '696': 'Texas Department of Criminal Justice',
+  '701': 'Texas Education Agency',
+  '771': 'Texas School for the Blind and Visually Impaired',
+  '772': 'Texas School for the Deaf',
   '781': 'Texas Higher Education Coordinating Board',
+  '802': 'Texas Parks and Wildlife Department',
+  '809': 'Texas State Preservation Board',
+  '813': 'Texas Commission on the Arts',
 };
 
   const buildSpend = (agency, fy) => {
@@ -306,16 +431,14 @@ const CUSTOMER_NAME_MAP = {
       .filter(r => {
         if (!r.customer_name) return false;
         const cn = r.customer_name.toUpperCase();
-        // 1. Try exact match from lookup map
         const exactName = CUSTOMER_NAME_MAP[agency.num];
-        if (exactName && cn === exactName.toUpperCase()) return true;
-        // 2. Try contains match on exact name
-        if (exactName && cn.includes(exactName.toUpperCase())) return true;
-        // 3. Fallback: match on agency name keywords (skip short abbrs like DPS which match too broadly)
-        if (agency.name.length > 6) {
-          const keywords = agency.name.toUpperCase().replace(/^(TEXAS|DEPARTMENT OF|OFFICE OF|COMMISSION ON)\s+/,'').slice(0,18);
-          if (keywords.length > 5 && cn.includes(keywords)) return true;
+        // If we have an exact name in the map, ONLY match on that — no fallback.
+        // This prevents e.g. "Transportation" matching Texas A&M Transportation Institute.
+        if (exactName) {
+          return cn === exactName.toUpperCase();
         }
+        // For agencies not in the map, skip matching entirely — show no data
+        // rather than risk false matches from keyword overlap.
         return false;
       });
 
