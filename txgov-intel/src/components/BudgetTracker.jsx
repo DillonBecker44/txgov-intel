@@ -317,15 +317,6 @@ const ALL_AGENCIES = [
 //   LBB HAC Summary Recommendations (DIR Agency 313), HB150 fiscal note (TXCC),
 //   Agency LARs (DPS, OAG, SOS, TEA), Art.VI CC Issue Docket (TCEQ/TDA confirmed)
 //
-// WHAT THIS NUMBER REPRESENTS:
-//   = Total annual IT spend from ALL appropriated sources (GR + GR-D + Federal + Other)
-//   = Capital budget rider + IT strategy line + IT exceptional items + federal co-funded IT
-//   = What agencies actually spend on IT, not just the GR capital rider
-//
-// budget_confirmed=true: verified from enacted legislation or agency operating budget
-// budget_confirmed=false: estimated from LBE strategy lines + LAR + methodology above
-//
-};
 
 
 const CURRENT_FY = '2026';
