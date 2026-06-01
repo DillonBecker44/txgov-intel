@@ -16,6 +16,104 @@ const isTexan = (rfo) => {
   if (!rfo) return false;
   const lower = rfo.toLowerCase();
   return TEXAN_RFOS.some(t => lower.includes(t));
+  // ── ART I: GENERAL GOVERNMENT (additional) ────────────────────────────────
+  '301': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Office of the Governor. Info Resources strategy ~$3M/yr + capital rider ~$2M/yr. LBE Art I.' },
+  '312': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Texas State Securities Board. Regulatory data + compliance systems. LBE Art VIII.' },
+  '328': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Veterans Land Board (combined with GLO in Art VI). Loan origination + land management systems.' },
+  '329': { fy26:3,    fy27:3,    confirmed:false,
+    note:'Texas Real Estate Commission. Online licensing + complaint management. LBE Art VIII.' },
+  '347': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Texas Public Finance Authority. Small agency; bond management systems. LBE Art I.' },
+  '356': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Texas Ethics Commission. Filing systems + public disclosure portal. LBE Art I.' },
+  '358': { fy26:3,    fy27:3,    confirmed:false,
+    note:'Texas Space Commission. New agency established 89th Legislature. IT infrastructure build-out.' },
+
+  // ── ART V: PUBLIC SAFETY (additional) ────────────────────────────────────
+  '407': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Texas Commission on Law Enforcement. CC Art V: $126K IT programmer adopted. Licensing database + academy tracking. LBE Art V.' },
+  '409': { fy26:1,    fy27:1,    confirmed:false,
+    note:'Commission on Jail Standards. CC Art V: cloud maintenance $38K adopted. Small agency IT. LBE Art V.' },
+  '448': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Office of Injured Employee Counsel. Workers comp claims management system. LBE Art VIII.' },
+
+  // ── ART I: REGULATORY/SUPPORT ─────────────────────────────────────────────
+  '477': { fy26:4,    fy27:4,    confirmed:false,
+    note:'Commission on State Emergency Communications (9-1-1). NG911 infrastructure + dispatch systems. LBE Art I.' },
+  '479': { fy26:3,    fy27:3,    confirmed:false,
+    note:'State Office of Risk Management. Claims management + risk analytics. LBE Art I.' },
+
+  // ── ART VIII: HEALTH PROFESSIONS ─────────────────────────────────────────
+  '503': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Texas Medical Board. Licensing + complaint management systems. LBE Art VIII.' },
+  '507': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Texas Board of Nursing. Online licensing portal + CE tracking. LBE Art VIII.' },
+  '515': { fy26:2,    fy27:2,    confirmed:false,
+    note:'State Board of Pharmacy. Pharmacy licensing + drug monitoring system (PMP). LBE Art VIII.' },
+
+  // ── ART II: HEALTH (additional) ───────────────────────────────────────────
+  '542': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Cancer Prevention and Research Institute (CPRIT). Grant management + research data systems. LBE Art I (Other Funds - bond proceeds).' },
+  '544': { fy26:3,    fy27:3,    confirmed:false,
+    note:'Texas Civil Commitment Office. Case management + facility systems. LBE Art II.' },
+
+  // ── ART VI: NATURAL RESOURCES (additional) ───────────────────────────────
+  '554': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Texas Animal Health Commission. Disease tracking + livestock data systems. LBE Art VI.' },
+  '575': { fy26:15,   fy27:15,   confirmed:false,
+    note:'Texas Division of Emergency Management (TDEM, under TAMU). Emergency mgmt info systems + AlertTexas + FEMA interoperability. LBE Art III.' },
+  '592': { fy26:1,    fy27:1,    confirmed:false,
+    note:'Texas State Soil and Water Conservation Board. Conservation data systems. LBE Art VI. Very small agency.' },
+
+  // ── ART III: EDUCATION (additional) ──────────────────────────────────────
+  '705': { fy26:3,    fy27:3,    confirmed:false,
+    note:'State Board for Educator Certification (SBEC). Educator certification database + online applications. LBE Art III.' },
+  '808': { fy26:3,    fy27:3,    confirmed:false,
+    note:'Texas Historical Commission. Preservation data + GIS + archeological site registry. LBE Art I.' },
+
+  // ── CPA FISCAL PROGRAMS ───────────────────────────────────────────────────
+  '907': { fy26:3,    fy27:3,    confirmed:false,
+    note:'State Energy Conservation Office (SECO, under CPA). LoanSTAR energy data platform + grant management. LBE Fiscal Programs.' },
+  '909': { fy26:3.5,  fy27:3.5,  confirmed:false,
+    note:'Texas Broadband Development Office (TBDO, under CPA). BEAD grant management + broadband mapping GIS. Federal BEAD grants ($3.3B+) are pass-through, not captured here.' },
+
+  // ── LEGISLATIVE (small IT budgets, included for completeness) ─────────────
+  '101': { fy26:8,    fy27:8,    confirmed:false,
+    note:'Texas Senate. Legislative IT systems + committee management. LBE Art X.' },
+  '102': { fy26:10,   fy27:10,   confirmed:false,
+    note:'Texas House of Representatives. Legislative IT + constituent management + eTIS. LBE Art X.' },
+  '103': { fy26:5,    fy27:5,    confirmed:false,
+    note:'Texas Legislative Council. Produces all enrolled legislation; bill drafting + statutory database systems are core mission. LBE Art X.' },
+  '104': { fy26:6,    fy27:6,    confirmed:false,
+    note:'Legislative Budget Board. ABEST budget system + performance reporting. Core IT mission. LBE Art X.' },
+
+  // ── JUDICIARY (additional) ────────────────────────────────────────────────
+  '201': { fy26:3,    fy27:3,    confirmed:false,
+    note:'Supreme Court of Texas. Case management + e-filing systems. LBE Art IV.' },
+  '211': { fy26:2,    fy27:2,    confirmed:false,
+    note:'Court of Criminal Appeals. Case management + judicial education systems. LBE Art IV.' },
+
+  // ── HIGHER EDUCATION (included for DIR coop tracking, no GR capital IT appropriation) ──
+  '710': { fy26:null, fy27:null, confirmed:false,
+    note:'Texas A&M University System. Higher ed IT tracked separately; included for DIR coop spend monitoring only.' },
+  '711': { fy26:null, fy27:null, confirmed:false,
+    note:'Texas A&M University. Included for DIR coop monitoring only.' },
+  '720': { fy26:null, fy27:null, confirmed:false,
+    note:'University of Texas System. Included for DIR coop monitoring only.' },
+  '721': { fy26:null, fy27:null, confirmed:false,
+    note:'University of Texas at Austin. Included for DIR coop monitoring only.' },
+  '730': { fy26:null, fy27:null, confirmed:false,
+    note:'University of Houston. Included for DIR coop monitoring only.' },
+  '733': { fy26:null, fy27:null, confirmed:false,
+    note:'Texas Tech University. Included for DIR coop monitoring only.' },
+  '752': { fy26:null, fy27:null, confirmed:false,
+    note:'University of North Texas. Included for DIR coop monitoring only.' },
+  '754': { fy26:null, fy27:null, confirmed:false,
+    note:'Texas State University. Included for DIR coop monitoring only.' },
+
 };
 
 const STS_PROGRAMS = {
