@@ -20,20 +20,20 @@ const isTexan = (rfo) => {
 
 const BUDGETS = {
   // ── ART II: HEALTH & HUMAN SERVICES ──────────────────────────────────────
-  '529': { fy26:550,  fy27:550,  confirmed:true,
-    note:'Capital rider ~$550M/yr (MMIS $237M biennium + TIERS $123M biennium + other). Operational IR strategy ~$38M/yr additional not reflected here. Federal co-funded IT adds ~$280M/yr more (not GR).' },
-  '530': { fy26:30,   fy27:30,   confirmed:false,
-    note:'CCWIS state share ~$30M/yr. Federal 50% match adds ~$30M/yr more.' },
+  '529': { fy26:588, fy27:588, confirmed:true,
+    note:'COMPONENTS: (A) Capital IT rider $550M/yr CONFIRMED SB1 Rider 2 — MMIS ~$237M biennium + TIERS ~$123M biennium + data center + WIC EBT + cyber; (B) Information Resources operational strategy ~$38M/yr (LBE Art II). State total = $588M/yr. Federal CMS co-funding adds ~$280M/yr more (not state appropriation).' },
+  '530': { fy26:26,   fy27:26,   confirmed:false,
+    note:'COMPONENTS: (A) Capital IT rider (CCWIS state share) ~$20M/yr; (B) Information Resources operational ~$6M/yr (LBE Art II). Federal ACF 50% match adds ~$26M more (not state appropriation). State total: $26M/yr.' },
   '537': { fy26:20,   fy27:20,   confirmed:false,
     note:'Info Resources strategy ~$9M/yr + capital rider ~$11M/yr.' },
-  '320': { fy26:62,   fy27:40,   confirmed:false,
-    note:'LBE Art VII Info Tech strategy $31.5M FY26 + capital rider $6M + federal UI CRM build $25M (one-time). FY27 lower as build completes.' },
+  '320': { fy26:37.5, fy27:34.2, confirmed:false,
+    note:'COMPONENTS: (A) Information Technology strategy $31.5M FY26 / $28.2M FY27 (LBE Art VII confirmed); (B) Capital rider ~$6M/yr. Federal UI admin grants for CRM ~$25M FY26 NOT counted here — not state appropriation. State total: $37.5M FY26 / $34.2M FY27.' },
   '332': { fy26:8,    fy27:8,    confirmed:false,
     note:'Housing systems + digital grant management. Info Resources + capital rider.' },
 
   // ── ART III: EDUCATION ────────────────────────────────────────────────────
-  '701': { fy26:47,   fy27:44,   confirmed:false,
-    note:'LBE Art III Strategy B.3.5 Info Systems ~$41.5M FY26 + capital rider ~$6M/yr. Federal Title program IT ~$15M/yr not included.' },
+  '701': { fy26:47.5, fy27:49.1, confirmed:false,
+    note:'COMPONENTS: (A) Strategy B.3.5 Information Systems-Technology ~$41.5M FY26 / $43.1M FY27 (LBE Art III confirmed); (B) Capital rider ~$6M/yr (CCIAM + K-12 cybersecurity). Federal Title IV-A school tech ~$15M/yr not included. State total: $47.5M FY26 / $49.1M FY27.' },
   '781': { fy26:6,    fy27:6,    confirmed:false,
     note:'Higher ed data systems + student success analytics.' },
   '306': { fy26:4,    fy27:4,    confirmed:false,
@@ -42,10 +42,10 @@ const BUDGETS = {
     note:'TRS pension admin modernization. Info Resources + capital rider.' },
 
   // ── ART V: PUBLIC SAFETY & CRIMINAL JUSTICE ───────────────────────────────
-  '405': { fy26:102,  fy27:85,   confirmed:false,
-    note:'DPS LAR: base IT strategy 5.1.2 = $57.4M FY26 all-funds. CC Docket adopted IT exceptional: body cameras/in-car $11M biennium, interoperability $9.9M, aircraft avionics $16.2M, EI#3 partial ~$44M FY26. FY27 lower as one-time items complete. TRUE IT budget ~$102M FY26.' },
-  '696': { fy26:75,   fy27:47,   confirmed:false,
-    note:'Base operational IT ~$45M/yr. CC Docket adopted: IT Staffing $7M biennium, Computer Refresh $0.15M, Capital equipment $54.4M biennium ($27.2M FY26). FY27 normalizes.' },
+  '405': { fy26:116, fy27:109, confirmed:false,
+    note:'COMPONENTS: (A) IT Strategy 5.1.2 = $57.4M FY26 / $50.1M FY27 CONFIRMED from DPS LAR all-funds; (B) DR/Modernization EI#3h (HB500) $48.5M/yr ($97M biennium — 40+ end-of-life apps); (C) Body cam/in-car (CC adopted) $5.5M/yr; (D) Interoperability (CC adopted) $4.95M/yr. Total $116M FY26 / $109M FY27.' },
+  '696': { fy26:50.2, fy27:43,   confirmed:false,
+    note:'COMPONENTS: (A) Information Resources strategy ~$8M/yr (LBE Art V); (B) Capital equipment rider $27.2M FY26 / $20M FY27 (CC Art V $54.4M biennium); (C) IT in facility operations est. ~$15M/yr. Total $50M FY26 / $43M FY27.' },
   '401': { fy26:45,   fy27:45,   confirmed:false,
     note:'GR IT ~$8M/yr. Total all-funds ~$45M/yr including substantial federal ARNG co-funding.' },
   '644': { fy26:8,    fy27:7,    confirmed:false,
@@ -56,8 +56,8 @@ const BUDGETS = {
   // ── ART VI: NATURAL RESOURCES ─────────────────────────────────────────────
   '551': { fy26:4,    fy27:4,    confirmed:true,
     note:'CC Art VI confirmed: Cybersecurity $0.8M/yr + Computer Equipment $0.1M + Operational IR ~$2.5M/yr = ~$3.5-4M/yr.' },
-  '582': { fy26:25,   fy27:25,   confirmed:true,
-    note:'CC Art VI confirmed: DCS $12.2M/yr + Cybersecurity $5.1M/yr + Operational IR $8M/yr = ~$25M/yr.' },
+  '582': { fy26:25.3, fy27:25.3, confirmed:true,
+    note:'COMPONENTS: (A) Information Resources strategy ~$8M/yr (LBE Art VI); (B) DCS exceptional item $12.2M/yr CONFIRMED CC Art VI ($24.4M biennium); (C) Cybersecurity exceptional item $5.1M/yr CONFIRMED CC Art VI ($10.2M biennium). All three confirmed. Total $25.3M/yr.' },
   '802': { fy26:9,    fy27:9,    confirmed:false,
     note:'Online licensing + GIS modernization. Info Resources ~$6M/yr + capital rider ~$3M/yr.' },
   '455': { fy26:5,    fy27:5,    confirmed:false,
@@ -68,20 +68,20 @@ const BUDGETS = {
     note:'GIS + land records + CDBG-DR grant management systems.' },
 
   // ── ART VII: BUSINESS & ECONOMIC DEVELOPMENT ──────────────────────────────
-  '608': { fy26:62.5, fy27:62.5, confirmed:true,
-    note:'Capital rider $62.5M/yr confirmed — entire capital budget dedicated to registration/title system replacement (30-year-old system, 20+ legacy apps).' },
-  '601': { fy26:83.7, fy27:83.7, confirmed:true,
-    note:'Capital rider $83.7M/yr confirmed. Operational IR strategy ~$42M/yr additional and district IT ~$55M/yr not captured here — total all-in IT ~$181M/yr.' },
+  '608': { fy26:67.5, fy27:67.5, confirmed:true,
+    note:'COMPONENTS: (A) Capital IT rider $62.5M/yr CONFIRMED SB1 Rider 2 — 100% dedicated to reg/title system replacement; (B) Information Resources operational strategy ~$5M/yr (LBE Art VII). Total $67.5M/yr.' },
+  '601': { fy26:155.7, fy27:155.7, confirmed:false,
+    note:'COMPONENTS: (A) Capital IT rider $83.7M/yr CONFIRMED SB1 Rider 2; (B) Information Resources strategy ~$42M/yr all-funds (LBE Art VII — IT staff across 25 districts); (C) District/field IT embedded in operations ~$30M/yr est. Capital rider alone understates true IT budget by ~$72M/yr.' },
 
   // ── ART I: GENERAL GOVERNMENT ─────────────────────────────────────────────
   '313': { fy26:28.6, fy27:28.4, confirmed:true,
     note:'LBB HAC Summary confirmed: GR governance $57.1M biennium = $28.6M/yr. Does NOT include STS ($1,048.4M biennium cost recovery), TEX-AN/CCTS ($231.9M biennium revolving fund), or Texas.gov — those flow through as agency coop/STS spend.' },
   '371': { fy26:60.5, fy27:75.0, confirmed:true,
     note:'HB150 fiscal note confirmed: $60.5M FY26 (SOC facility $25M + personnel $8.5M + operations), $75M FY27 (full ramp to 130 FTE).' },
-  '302': { fy26:15,   fy27:15,   confirmed:false,
-    note:'LBE confirmed Agency IT Projects = $0 FY26-27 (was $21M FY25 — projects complete). IT now embedded in operational strategies. Estimated ~$15M/yr ongoing.' },
-  '304': { fy26:28,   fy27:28,   confirmed:false,
-    note:'CAPPS stewardship + revenue systems. Info Resources ~$20M/yr + capital rider ~$8M/yr.' },
+  '302': { fy26:15, fy27:15, confirmed:false,
+    note:'LBE confirmed: dedicated IT strategy = $0 FY26-27 (was $38M FY23, $21M FY25 — projects complete). COMPONENTS: (A) Agency IT Projects $0 confirmed; (B) IT embedded in Legal Services est. ~$8M/yr; (C) IT in Child Support est. ~$7M/yr. True IT budget ~$15M/yr but none is explicitly appropriated as IT.' },
+  '304': { fy26:26,   fy27:26,   confirmed:false,
+    note:'LBE confirmed IR strategy ~$5.2M/yr. Capital rider ~$8M/yr est. CAPPS/revenue IT ~$13M/yr embedded in program strategies. COMPONENTS: (A) IR strategy $5.2M; (B) capital rider $8M est; (C) CAPPS/revenue program IT $13M. NOTE: CAPPS interagency payments from other agencies appear in CPA DIR spend but are PASS-THROUGHS, not CPA IT budget.' },
   '307': { fy26:6,    fy27:6,    confirmed:false,
     note:'TEAM election system upgrade + business filings modernization.' },
   '303': { fy26:4,    fy27:4,    confirmed:false,
